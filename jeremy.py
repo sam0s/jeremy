@@ -1,5 +1,6 @@
 import tts,games
 import speech_recognition as sr
+from re import sub
 
 wft=0
 run=True
@@ -7,49 +8,53 @@ run=True
 def process_text(msg):
     global wft
     global run
+    omsg=msg
     msg=msg.split(" ")
     if wft == 1:
         if "dice" in msg:
-            dice(6)
-        if msg[0]=="quit":
+            games.dice(6)
+        if "how are you" in omsg:
+            tts.speak("I'm ok bro. What about yourself big fella.")
+        if "repeat me" in omsg:
+            s=omsg.replace("repeat me","",1)
+            tts.speak(s)
+        if "shut down" in omsg:
             run = False
         print(msg)
         wft=0
-    if msg[0] == "Jeremy" and wft==0:
+    if msg[0] == "jeremy" and wft==0:
         wft = 1
-        speak("Yes, what do you need?")
+        tts.speak("Yes, what do you need?")
 
-
-
-def heard(recognizer, audio):
-    print("heard you, light: "+str(wft))
-    try:
-        text = recognizer.recognize_google(audio)
-        process_text(text)
-    except sr.UnknownValueError:
-        pass
-        #no need to tell the user, just means we heard gibberish or noise
-    except sr.RequestError as e:
-        #
-        print("request error; {0}".format(e))
 
 #listener.energy_threshold()
 def mainLoop():
+    r = sr.Recognizer()
+
+    with sr.Microphone() as source:
+        r.adjust_for_ambient_noise(source,3)
+    print(r.energy_threshold)
+    #r.energy_threshold=40
+    print("j-init")
     while(run):
-        pass
-    #close the listener
+        try:
+            with sr.Microphone() as source2:
+                audio2 = r.listen(source2)
+                print("heard you, light: "+str(wft))
+                if wft==1:
+                    text = r.recognize_wit(audio2,key="JE7HXDQLPQ3JIO7CX6KU7QOFIPRAAEVA")
+                else:
+                    text = r.recognize_sphinx(audio2)
+                text = text.lower()
+                print("I heard: "+text)
+                if(len(text)>1):
+                    process_text(text)
+        except sr.RequestError as e:
+            print("Could not request results; {0}".format(e))
+        except sr.UnknownValueError:
+            print("no words detected")
+
     listener(False)
-    engine.stop()
 
 if __name__ == '__main__':
-
-    r = sr.Recognizer()
-    m = sr.Microphone()
-
-    with m as source:
-       r.adjust_for_ambient_noise(source,2)
-    print(r.energy_threshold)
-    r.energy_threshold=16
-    listener = r.listen_in_background(m, heard)
-    games.dice(12)
     mainLoop()

@@ -78,22 +78,21 @@ def getYesNoOk():
     r = sr.Recognizer()
     with sr.Microphone() as source:
         r.adjust_for_ambient_noise(source,3)
-        nn=sr.Microphone.list_microphone_names()
-        while(True):
-            try:
-                with sr.Microphone() as source2:
-                    audio2 = r.listen(source2)
-                    text = r.recognize_sphinx(audio2)
-                    text = text.lower()
-                    print("I heard: "+text)
-                    if(len(text)>1):
-                        if "yes" in text:
-                            return "yes"
-                        if "no" in text:
-                            return "no"
-                        if "ok" in text:
-                            return "ok"
-            except sr.RequestError as e:
-                print("Could not request results; {0}".format(e))
-            except sr.UnknownValueError:
-                print("no words detected")
+    while(True):
+        try:
+            with sr.Microphone() as source2:
+                audio2 = r.listen(source2)
+                text = r.recognize_sphinx(audio2)
+                text = text.lower()
+                print("I heard: "+text)
+                if(len(text)>1):
+                    if "yes" in text:
+                        return "yes"
+                    if "no" in text:
+                        return "no"
+                    if "ok" in text:
+                        return "ok"
+        except sr.RequestError as e:
+            print("Could not request results; {0}".format(e))
+        except sr.UnknownValueError:
+            print("no words detected")

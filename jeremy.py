@@ -34,7 +34,7 @@ def process_text(msg):
 def mainLoop():
     r = sr.Recognizer()
     with sr.Microphone() as source:
-        r.adjust_for_ambient_noise(source,3)
+        r.adjust_for_ambient_noise(source,6)
     print(r.energy_threshold)
     #r.energy_threshold=40
     nn=sr.Microphone.list_microphone_names()

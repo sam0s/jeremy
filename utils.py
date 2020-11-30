@@ -7,10 +7,33 @@ from datetime import datetime
 import requests
 import json
 import speech_recognition as sr
-
+from re import findall,MULTILINE
+from urllib.request import urlopen
+from urllib.error import HTTPError
 #weather api key :)
 from credentz import *
 base_url = 'http://api.openweathermap.org/data/2.5/weather?'
+
+
+def define(x):
+    try:
+        srch=str(x)
+        x=urlopen("http://dictionary.reference.com/browse/"+srch+"?s=t")
+        x=x.read().decode('utf-8')
+        items=findall('<meta name="description" content="'+".*$",x,MULTILINE)
+        for x in items:
+            z=x.replace('<meta name="description" content="','').replace(' See more.">','')
+            m=findall('at Dictionary.com,a free online dictionary with pronunciation,synonyms and translation. Look it up now! "/>',z)
+            if m==[]:
+                if z.startswith("Get your reference question answered by Ask.com"):
+                    print("Word not found! :(")
+                else:
+                    print(z)
+            else:
+                raise HTTPError
+    except HTTPError:
+        print("Couldn't find that word.")
+
 
 def greeting():
     now = datetime.now()

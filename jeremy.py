@@ -2,6 +2,8 @@ import tts,utils
 import speech_recognition as sr
 from gpiozero import LED
 from re import sub
+#wit key
+from credentz import *
 greetings = ["how are you", "what's up", "are you doing","it going","you been"]
 l1 = LED(17)
 l2 = LED(18)
@@ -25,13 +27,15 @@ def process_text(msg):
             utils.time()
         elif any(greeting in omsg for greeting in greetings):
             utils.greeting()
+        elif "define" in omsg:
+            utils.define(omsg.replace("define",""))
         elif "shut down" in omsg:
             run = False
         print(msg)
         wft=0
         l1.off()
         l2.on()
-    if "jeremy" in msg[0] or "tyranny" in msg[0] and wft==0:
+    if "jeremy" in omsg or "gary" in omsg or "jerry" in omsg or "jenny" in omsg or "tyranny" in omsg and wft==0:
         wft = 1
         l1.on()
         l2.off()
@@ -53,9 +57,8 @@ def mainLoop():
                 audio2 = r.listen(source2,timeout=1)
                 print("heard you, light: "+str(wft))
                 if wft==1:
-                    text = r.recognize_wit(audio2,key="JE7HXDQLPQ3JIO7CX6KU7QOFIPRAAEVA")
+                    text = r.recognize_wit(audio2,key=wit_key)
                 else:
-#                    text = r.recognize_wit(audio2,key="JE7HXDQLPQ3JIO7CX6KU7QOFIPRAAEVA")
                     text = r.recognize_sphinx(audio2)
                 text = text.lower()
                 print("I heard: "+text)
